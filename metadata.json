@@ -1,0 +1,5 @@
+{
+  "name": "Comfort Tasks Pro",
+  "description": "A premium service marketplace connecting customers with trusted local professionals for home maintenance, repairs, and specialized tasks. Features offline support and optimized performance.",
+  "requestFramePermissions": ["geolocation"]
+}
