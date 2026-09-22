@@ -32,6 +32,8 @@ export default function CompanyProfile() {
     businessType: '',
     industry: '',
     phoneNumber: '',
+    whatsappNumber: '',
+    neighborhood: '',
     email: '',
     businessLogoUrl: '',
     avatarUrl: '',
@@ -47,6 +49,8 @@ export default function CompanyProfile() {
         businessType: profile.businessType || '',
         industry: profile.industry || '',
         phoneNumber: profile.phoneNumber || '',
+        whatsappNumber: profile.whatsappNumber || profile.phoneNumber || '',
+        neighborhood: profile.neighborhood || '',
         email: profile.email || '',
         businessLogoUrl: profile.businessLogoUrl || '',
         avatarUrl: profile.avatarUrl || '',
@@ -229,7 +233,7 @@ export default function CompanyProfile() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-bold text-gray-700">Location</label>
+              <label className="block text-sm font-bold text-gray-700">Location / City</label>
               <div className="relative">
                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -237,9 +241,24 @@ export default function CompanyProfile() {
                   className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
                   value={formData.location}
                   onChange={e => setFormData({...formData, location: e.target.value})}
-                  placeholder="City, Country"
+                  placeholder="e.g. Harare, Zimbabwe or New York, NY"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-gray-700">Neighborhood / Hood</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 w-5 h-5" />
+                <input
+                  type="text"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.neighborhood}
+                  onChange={e => setFormData({...formData, neighborhood: e.target.value})}
+                  placeholder="e.g. Avondale, Borrowdale, CBD, Brooklyn"
+                />
+              </div>
+              <span className="text-xs text-gray-400">Used to match you with nearby customers for speed jobs</span>
             </div>
           </div>
 
@@ -271,6 +290,24 @@ export default function CompanyProfile() {
                   onChange={e => setFormData({...formData, phoneNumber: e.target.value})}
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-gray-700 flex items-center justify-between">
+                <span>WhatsApp Number</span>
+                <span className="text-emerald-600 text-xs font-semibold">For 1-Tap Client Orders</span>
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600 w-5 h-5" />
+                <input
+                  type="tel"
+                  placeholder="e.g. +263771234567"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  value={formData.whatsappNumber}
+                  onChange={e => setFormData({...formData, whatsappNumber: e.target.value})}
+                />
+              </div>
+              <span className="text-xs text-gray-400">Include country code (e.g. +263 or +1) without spaces for direct links</span>
             </div>
 
             <div className="space-y-2">

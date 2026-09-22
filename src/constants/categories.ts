@@ -2,51 +2,100 @@ import { Category } from '../types';
 
 export const CATEGORIES: Category[] = [
   {
-    id: 'cleaning',
-    name: 'Cleaning',
-    icon: 'Sparkles',
-    description: 'Home, office, and deep cleaning services'
+    id: 'building',
+    name: 'Building',
+    icon: 'Building2',
+    description: 'Brickwork, masonry, renovations, roofing and plastering'
   },
   {
     id: 'plumbing',
     name: 'Plumbing',
     icon: 'Droplets',
-    description: 'Fix leaks, install pipes, and repair fixtures'
+    description: 'Fix leaks, install pipes, drainage, geysers and taps'
+  },
+  {
+    id: 'tiling',
+    name: 'Tiling',
+    icon: 'Grid',
+    description: 'Floor & wall tiling, grouting, bathroom & kitchen finishing'
+  },
+  {
+    id: 'landscaping',
+    name: 'Landscaping',
+    icon: 'Trees',
+    description: 'Lawn mowing, tree trimming, garden design, yard maintenance'
+  },
+  {
+    id: 'electronics-repair',
+    name: 'Electronics repair',
+    icon: 'Tv',
+    description: 'TV, phone, computer, fridge, microwave & appliance fixes'
+  },
+  {
+    id: 'barber',
+    name: 'Barber',
+    icon: 'Scissors',
+    description: 'Men haircuts, beard trims, fades, mobile barber home visits'
+  },
+  {
+    id: 'salon',
+    name: 'Salon',
+    icon: 'Sparkles',
+    description: 'Hair styling, braiding, dreadlocks, nail care & makeup'
+  },
+  {
+    id: 'general-cleaners',
+    name: 'General Cleaners',
+    icon: 'SprayCan',
+    description: 'Home deep cleaning, sofa washing, office cleaning, laundry'
+  },
+  {
+    id: 'runners',
+    name: 'Runners',
+    icon: 'ShoppingBag',
+    description: 'Grocery shoppers, parcel deliveries, errand runners, dispatch'
+  },
+  {
+    id: 'handyman',
+    name: 'Handyman',
+    icon: 'Hammer',
+    description: 'General repairs, door handles, picture hanging, carpentry'
   },
   {
     id: 'electrical',
     name: 'Electrical',
     icon: 'Zap',
-    description: 'Wiring, lighting, and electrical repairs'
-  },
-  {
-    id: 'assembly',
-    name: 'Assembly',
-    icon: 'Wrench',
-    description: 'Furniture assembly and mounting'
-  },
-  {
-    id: 'moving',
-    name: 'Moving',
-    icon: 'Truck',
-    description: 'Local moving and delivery services'
-  },
-  {
-    id: 'gardening',
-    name: 'Gardening',
-    icon: 'Leaf',
-    description: 'Lawn care, landscaping, and garden maintenance'
+    description: 'Wiring, circuit breakers, solar installation, lighting'
   },
   {
     id: 'painting',
     name: 'Painting',
     icon: 'Paintbrush',
-    description: 'Interior and exterior painting'
+    description: 'Interior & exterior painting, water-proofing, wall coating'
   },
   {
-    id: 'repairs',
-    name: 'Handyman',
-    icon: 'Hammer',
-    description: 'General home repairs and maintenance'
+    id: 'software-and-applications',
+    name: 'Software and Applications',
+    icon: 'Code',
+    description: 'Websites, mobile apps, databases, software troubleshooting & setup'
+  },
+  {
+    id: 'consultation',
+    name: 'Consultation',
+    icon: 'Briefcase',
+    description: 'Business, technical, project planning & professional guidance'
+  },
+  {
+    id: 'designs',
+    name: 'Designs',
+    icon: 'Palette',
+    description: 'Graphic design, architectural plans, branding, 3D modelling & UI/UX'
+  },
+  {
+    id: 'other',
+    name: 'Other',
+    icon: 'MoreHorizontal',
+    description: 'Specialized and custom services or products'
   }
 ];
+

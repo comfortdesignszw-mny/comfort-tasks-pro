@@ -13,18 +13,27 @@ import {
   MoreVertical,
   Edit2,
   Trash2,
-  ExternalLink
+  ExternalLink,
+  Share2
 } from 'lucide-react';
-import { collection, query, where, onSnapshot, orderBy, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
 import { ProductService } from '../types';
 import { useAuth } from '../hooks/useAuth';
+import { EditServiceModal } from '../components/EditServiceModal';
+import { DeleteServiceModal } from '../components/DeleteServiceModal';
+import { ShareServiceModal } from '../components/ShareServiceModal';
 
 export default function ProviderDashboard() {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const [services, setServices] = useState<ProductService[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal states
+  const [editingService, setEditingService] = useState<ProductService | null>(null);
+  const [deletingService, setDeletingService] = useState<ProductService | null>(null);
+  const [sharingService, setSharingService] = useState<ProductService | null>(null);
 
   useEffect(() => {
     if (!auth.currentUser) return;
@@ -49,16 +58,6 @@ export default function ProviderDashboard() {
 
     return () => unsubscribe();
   }, []);
-
-  const handleDeleteService = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this service?')) {
-      try {
-        await deleteDoc(doc(db, 'products_services', id));
-      } catch (error) {
-        console.error("Error deleting service:", error);
-      }
-    }
-  };
 
   const stats = [
     { label: 'Active Services', value: services.length, icon: Package, color: 'text-blue-600', bg: 'bg-blue-50' },
@@ -163,14 +162,26 @@ export default function ProviderDashboard() {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-4 right-4 flex gap-2">
-                    <button className="p-2 bg-white/90 backdrop-blur-sm rounded-xl text-gray-600 hover:text-blue-600 transition-colors shadow-lg">
+                    <button 
+                      onClick={() => setEditingService(service)}
+                      title="Edit Service (Owner)"
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-xl text-gray-700 hover:text-blue-600 transition-colors shadow-lg"
+                    >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button 
-                      onClick={() => handleDeleteService(service.id)}
-                      className="p-2 bg-white/90 backdrop-blur-sm rounded-xl text-gray-600 hover:text-red-600 transition-colors shadow-lg"
+                      onClick={() => setDeletingService(service)}
+                      title="Delete Service (Owner)"
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-xl text-gray-700 hover:text-red-600 transition-colors shadow-lg"
                     >
                       <Trash2 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => setSharingService(service)}
+                      title="Share Service"
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-xl text-gray-700 hover:text-emerald-600 transition-colors shadow-lg"
+                    >
+                      <Share2 className="w-4 h-4" />
                     </button>
                   </div>
                   <div className="absolute bottom-4 left-4 flex gap-2">
@@ -210,6 +221,27 @@ export default function ProviderDashboard() {
           </div>
         )}
       </div>
+
+      {/* Modals for REBAC Service Management */}
+      <EditServiceModal
+        service={editingService}
+        isOpen={!!editingService}
+        onClose={() => setEditingService(null)}
+        onSaved={() => {}}
+      />
+
+      <DeleteServiceModal
+        service={deletingService}
+        isOpen={!!deletingService}
+        onClose={() => setDeletingService(null)}
+        onDeleted={() => {}}
+      />
+
+      <ShareServiceModal
+        service={sharingService}
+        isOpen={!!sharingService}
+        onClose={() => setSharingService(null)}
+      />
     </div>
   );
 }

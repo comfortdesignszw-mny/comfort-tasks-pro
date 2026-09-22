@@ -38,6 +38,34 @@
         "updatedAt": { "type": "number" }
       },
       "required": ["id", "customerId", "title", "description", "category", "budget", "status", "location", "date", "createdAt", "updatedAt"]
+    },
+    "ProductService": {
+      "title": "Product or Service",
+      "description": "A service or product offered by a provider",
+      "type": "object",
+      "properties": {
+        "providerId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "type": { "type": "string", "enum": ["service", "product"] },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["providerId", "name", "description", "price", "createdAt"]
+    },
+    "ServiceRating": {
+      "title": "Service Rating",
+      "description": "Customer rating for a service or product",
+      "type": "object",
+      "properties": {
+        "serviceId": { "type": "string" },
+        "providerId": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewerName": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["serviceId", "providerId", "rating", "reviewerName", "createdAt"]
     }
   },
   "firestore": {
@@ -48,6 +76,14 @@
     "/tasks/{taskId}": {
       "schema": "Task",
       "description": "Task records"
+    },
+    "/products_services/{serviceId}": {
+      "schema": "ProductService",
+      "description": "Published services and products"
+    },
+    "/service_ratings/{ratingId}": {
+      "schema": "ServiceRating",
+      "description": "Service reviews and star ratings"
     }
   }
 }

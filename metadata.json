@@ -1,5 +1,6 @@
 {
-  "name": "Comfort Tasks Pro",
-  "description": "A premium service marketplace connecting customers with trusted local professionals for home maintenance, repairs, and specialized tasks. Features offline support and optimized performance.",
-  "requestFramePermissions": ["geolocation"]
+  "name": "Comfort Handyman Tasks",
+  "description": "Comfort Handyman Tasks connects clients with trusted local pros for Building, Plumbing, Tiling, Landscaping, Electronics repair, Barber, Salon, Cleaners, Runners, and more. Features 1-tap WhatsApp booking and local neighborhood matching.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

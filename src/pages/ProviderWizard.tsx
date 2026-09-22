@@ -20,6 +20,8 @@ import { doc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { ProductService } from '../types';
+import { CATEGORIES } from '../constants/categories';
+import { POPULAR_HOODS } from '../constants/neighborhoods';
 
 export default function ProviderWizard() {
   const navigate = useNavigate();
@@ -36,6 +38,8 @@ export default function ProviderWizard() {
     businessType: profile?.businessType || '',
     industry: profile?.industry || '',
     phoneNumber: profile?.phoneNumber || '',
+    whatsappNumber: profile?.whatsappNumber || profile?.phoneNumber || '',
+    neighborhood: profile?.neighborhood || '',
     email: profile?.email || '',
     businessLogoUrl: profile?.businessLogoUrl || '',
     avatarUrl: profile?.avatarUrl || '',
@@ -50,6 +54,8 @@ export default function ProviderWizard() {
         businessType: profile.businessType || '',
         industry: profile.industry || '',
         phoneNumber: profile.phoneNumber || '',
+        whatsappNumber: profile.whatsappNumber || profile.phoneNumber || '',
+        neighborhood: profile.neighborhood || '',
         email: profile.email || '',
         businessLogoUrl: profile.businessLogoUrl || '',
         avatarUrl: profile.avatarUrl || '',
@@ -105,6 +111,8 @@ export default function ProviderWizard() {
         businessType: formData.businessType,
         industry: formData.industry,
         phoneNumber: formData.phoneNumber,
+        whatsappNumber: formData.whatsappNumber || formData.phoneNumber,
+        neighborhood: formData.neighborhood,
         email: formData.email,
         businessLogoUrl: formData.businessLogoUrl || `https://picsum.photos/seed/${formData.businessName}/200/200`,
         avatarUrl: formData.avatarUrl || `https://picsum.photos/seed/${formData.fullName}/200/200`,
@@ -117,11 +125,20 @@ export default function ProviderWizard() {
       const servicesRef = collection(db, 'products_services');
       for (const service of services) {
         if (service.name && service.description) {
+          const effectiveCat =
+            service.category === 'Other' && (service as any).customCategory?.trim()
+              ? `Other: ${(service as any).customCategory.trim()}`
+              : (service.category || 'General');
+
           await addDoc(servicesRef, {
             ...service,
+            category: effectiveCat,
+            customCategory: (service as any).customCategory || '',
             providerId: user.uid,
             providerName: formData.businessName || formData.fullName,
             providerPhone: formData.phoneNumber,
+            providerWhatsApp: formData.whatsappNumber || formData.phoneNumber,
+            providerHood: formData.neighborhood,
             providerEmail: formData.email,
             createdAt: Date.now()
           });
@@ -251,6 +268,36 @@ export default function ProviderWizard() {
                         placeholder="+1 (555) 000-0000"
                       />
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700 flex items-center justify-between">
+                      <span>WhatsApp Number</span>
+                      <span className="text-emerald-600 text-xs font-semibold">For 1-Tap Client Orders</span>
+                    </label>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600 w-5 h-5" />
+                      <input
+                        type="tel"
+                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+                        value={formData.whatsappNumber}
+                        onChange={e => setFormData({...formData, whatsappNumber: e.target.value})}
+                        placeholder="+263 77 123 4567"
+                      />
+                    </div>
+                    <span className="text-xs text-gray-400">Clients will place 1-tap orders directly to this WhatsApp</span>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-bold text-gray-700">Neighborhood / Hood</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                        value={formData.neighborhood}
+                        onChange={e => setFormData({...formData, neighborhood: e.target.value})}
+                        placeholder="e.g. Avondale, Borrowdale, CBD, Brooklyn"
+                      />
+                    </div>
+                    <span className="text-xs text-gray-400">Helps match you with clients in the same hood for speed jobs</span>
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-bold text-gray-700">Email Address</label>
@@ -406,18 +453,33 @@ export default function ProviderWizard() {
                         <div className="space-y-2">
                           <label className="block text-xs font-bold text-gray-500 uppercase">Category</label>
                           <select
-                            className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm cursor-pointer"
                             value={service.category}
                             onChange={e => handleServiceChange(index, 'category', e.target.value)}
                           >
                             <option value="">Select Category</option>
-                            <option value="Cleaning">Cleaning</option>
-                            <option value="Maintenance">Maintenance</option>
-                            <option value="Repairs">Repairs</option>
-                            <option value="Consulting">Consulting</option>
-                            <option value="Delivery">Delivery</option>
-                            <option value="Other">Other</option>
+                            {CATEGORIES.map(cat => (
+                              <option key={cat.id} value={cat.name}>{cat.name}</option>
+                            ))}
                           </select>
+
+                          {/* Expands when Other is selected */}
+                          {service.category === 'Other' && (
+                            <div className="pt-2">
+                              <label className="block text-xs font-bold text-blue-900 mb-1 flex items-center gap-1">
+                                <span>Specify Product / Service</span>
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                className="w-full px-4 py-2.5 rounded-xl border-2 border-blue-200 bg-blue-50/40 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none text-sm"
+                                value={(service as any).customCategory || ''}
+                                onChange={e => handleServiceChange(index, 'customCategory' as any, e.target.value)}
+                                placeholder="e.g. Solar Installation, Custom Woodwork, 3D Printing"
+                                autoFocus
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <label className="block text-xs font-bold text-gray-500 uppercase">{service.type === 'product' ? 'Product Name' : 'Service Name'}</label>

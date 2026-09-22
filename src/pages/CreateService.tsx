@@ -18,6 +18,7 @@ import {
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../hooks/useAuth';
+import { CATEGORIES } from '../constants/categories';
 
 export default function CreateService() {
   const navigate = useNavigate();
@@ -32,8 +33,21 @@ export default function CreateService() {
     price: '',
     category: '',
     type: 'service' as 'service' | 'product',
-    imageUrl: ''
+    imageUrl: '',
+    whatsappNumber: '',
+    neighborhood: ''
   });
+  const [customCategory, setCustomCategory] = useState('');
+
+  React.useEffect(() => {
+    if (profile) {
+      setFormData(prev => ({
+        ...prev,
+        whatsappNumber: prev.whatsappNumber || profile.whatsappNumber || profile.phoneNumber || '',
+        neighborhood: prev.neighborhood || profile.neighborhood || profile.location || ''
+      }));
+    }
+  }, [profile]);
 
   // Redirect if not a provider or setup not complete
   if (profile && profile.role !== 'provider') {
@@ -50,21 +64,33 @@ export default function CreateService() {
       return;
     }
 
+    if (formData.category === 'Other' && !customCategory.trim()) {
+      setError('Please specify the product or service');
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     try {
+      const effectiveCategory = formData.category === 'Other' && customCategory.trim()
+        ? `Other: ${customCategory.trim()}`
+        : formData.category;
+
       const servicesRef = collection(db, 'products_services');
       await addDoc(servicesRef, {
         name: formData.name,
         description: formData.description,
         price: Number(formData.price),
-        category: formData.category,
+        category: effectiveCategory,
+        customCategory: formData.category === 'Other' ? customCategory.trim() : '',
         type: formData.type,
         imageUrl: formData.imageUrl || `https://picsum.photos/seed/${formData.name}/400/300`,
         providerId: user.uid,
         providerName: profile.businessName || profile.fullName,
         providerPhone: profile.phoneNumber || '',
+        providerWhatsApp: formData.whatsappNumber || profile.whatsappNumber || profile.phoneNumber || '',
+        providerHood: formData.neighborhood || profile.neighborhood || profile.location || 'Local',
         providerEmail: profile.email || '',
         createdAt: Date.now()
       });
@@ -177,19 +203,65 @@ export default function CreateService() {
                 <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <select
                   required
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer"
                   value={formData.category}
                   onChange={e => setFormData({...formData, category: e.target.value})}
                 >
                   <option value="">Select Category</option>
-                  <option value="Cleaning">Cleaning</option>
-                  <option value="Maintenance">Maintenance</option>
-                  <option value="Repairs">Repairs</option>
-                  <option value="Consulting">Consulting</option>
-                  <option value="Delivery">Delivery</option>
-                  <option value="Other">Other</option>
+                  {CATEGORIES.map(cat => (
+                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                  ))}
                 </select>
               </div>
+
+              {/* Expands when Other is selected */}
+              {formData.category === 'Other' && (
+                <div className="pt-2">
+                  <label className="block text-xs font-bold text-blue-900 mb-1.5 flex items-center gap-1.5">
+                    <span>Specify Product / Service</span>
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-4 py-3 rounded-xl border-2 border-blue-200 bg-blue-50/40 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-all"
+                    value={customCategory}
+                    onChange={e => setCustomCategory(e.target.value)}
+                    placeholder="e.g. Solar Installation, Custom Woodwork, 3D Printing"
+                    autoFocus
+                  />
+                  <span className="text-[11px] text-gray-500 mt-1 block">
+                    Type your specific trade or custom product/service offering
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-gray-700 flex items-center justify-between">
+                <span>WhatsApp Number for Orders</span>
+                <span className="text-emerald-600 text-xs font-semibold">1-Tap Direct</span>
+              </label>
+              <input
+                type="tel"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+                value={formData.whatsappNumber}
+                onChange={e => setFormData({...formData, whatsappNumber: e.target.value})}
+                placeholder="+263 77 123 4567"
+              />
+              <span className="text-xs text-gray-400">Customers will place instant orders to this WhatsApp number</span>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-bold text-gray-700">Neighborhood / Hood</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                value={formData.neighborhood}
+                onChange={e => setFormData({...formData, neighborhood: e.target.value})}
+                placeholder="e.g. Avondale, Borrowdale, CBD, Brooklyn"
+              />
+              <span className="text-xs text-gray-400">Enables location-based suggestions for customers in the same hood</span>
             </div>
 
             <div className="space-y-2 md:col-span-2">

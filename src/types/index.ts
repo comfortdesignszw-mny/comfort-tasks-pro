@@ -7,6 +7,8 @@ export interface UserProfile {
   role: UserRole;
   avatarUrl?: string;
   phoneNumber?: string;
+  whatsappNumber?: string;
+  neighborhood?: string;
   bio?: string;
   rating?: number;
   reviewCount?: number;
@@ -25,13 +27,35 @@ export interface ProductService {
   providerId: string;
   providerName?: string;
   providerPhone?: string;
+  providerWhatsApp?: string;
   providerEmail?: string;
+  providerLocation?: string;
+  providerHood?: string;
   name: string;
   description: string;
   price: number;
   category: string;
+  customCategory?: string;
   type: 'service' | 'product';
   imageUrl?: string;
+  createdAt: number;
+  updatedAt?: number;
+  ratingAvg?: number;
+  ratingCount?: number;
+  latitude?: number;
+  longitude?: number;
+  sharesCount?: number;
+}
+
+export interface ServiceRating {
+  id?: string;
+  serviceId: string;
+  providerId: string;
+  rating: number; // 1 - 5
+  reviewerName: string;
+  reviewerId?: string;
+  reviewerIsGuest: boolean;
+  comment?: string;
   createdAt: number;
 }
 
@@ -41,7 +65,9 @@ export interface Task {
   customerName: string;
   customerAvatarUrl?: string;
   customerPhone?: string;
+  customerWhatsApp?: string;
   customerEmail?: string;
+  neighborhood?: string;
   providerId?: string;
   title: string;
   description: string;
@@ -80,5 +106,22 @@ export interface ServiceRequest {
   clientId: string;
   providerId: string;
   serviceId: string;
+  timestamp: number;
+}
+
+export interface WhatsAppOrder {
+  id?: string;
+  serviceId: string;
+  serviceName: string;
+  serviceCategory: string;
+  servicePrice: number;
+  providerId: string;
+  providerName: string;
+  providerWhatsApp: string;
+  customerName: string;
+  customerWhatsApp: string;
+  customerHood: string;
+  customerNotes?: string;
+  urgency?: string;
   timestamp: number;
 }
