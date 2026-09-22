@@ -27,7 +27,8 @@ import { db } from '../lib/firebase';
 import { useAuth } from '../hooks/useAuth';
 import { ProductService } from '../types';
 import { CATEGORIES } from '../constants/categories';
-import { POPULAR_HOODS } from '../constants/neighborhoods';
+import { POPULAR_HOODS, isServiceInLocation } from '../constants/neighborhoods';
+import { LocationSelector } from '../components/LocationSelector';
 import { WhatsAppOrderModal } from '../components/WhatsAppOrderModal';
 import { RatingModal } from '../components/RatingModal';
 import { EditServiceModal } from '../components/EditServiceModal';
@@ -157,10 +158,9 @@ export default function BrowseServices() {
   };
 
   const isLocalToUser = (service: ProductService): boolean => {
-    if (!selectedHood || selectedHood === 'All Hoods') return false;
-    const hoodLower = selectedHood.toLowerCase();
-    const serviceHood = (service.providerHood || service.providerLocation || '').toLowerCase();
-    return serviceHood.includes(hoodLower) || hoodLower.includes(serviceHood);
+    if (!selectedHood || selectedHood === 'All Hoods' || selectedHood === 'All Locations') return false;
+    const serviceLoc = service.providerHood || service.providerLocation;
+    return isServiceInLocation(serviceLoc, selectedHood);
   };
 
   // Filter and sort services
@@ -273,35 +273,13 @@ export default function BrowseServices() {
             />
           </div>
 
-          {/* Neighborhood Selector */}
-          <div className="md:col-span-3 flex items-center gap-2 bg-white px-3.5 py-2.5 rounded-2xl border border-gray-200 shadow-sm">
-            <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
-            <div className="flex-1">
-              <span className="block text-[9px] uppercase font-bold text-gray-400">Neighborhood</span>
-              <select
-                value={selectedHood}
-                onChange={(e) => handleHoodChange(e.target.value)}
-                className="w-full bg-transparent text-xs font-bold text-gray-900 outline-none cursor-pointer"
-              >
-                {POPULAR_HOODS.map((hood) => (
-                  <option key={hood} value={hood}>
-                    {hood}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* GPS Button */}
-          <div className="md:col-span-3 flex gap-2">
-            <button
-              onClick={handleDetectLocation}
-              disabled={locating}
-              className="flex-1 py-3 px-3 bg-gray-900 hover:bg-gray-800 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
-            >
-              <Navigation className={`w-3.5 h-3.5 ${locating ? 'animate-spin' : ''}`} />
-              <span>{locating ? 'Locating...' : 'Use My GPS'}</span>
-            </button>
+          {/* Location / City / Neighborhood Selector with Auto-Detect & Custom Places */}
+          <div className="md:col-span-6">
+            <LocationSelector
+              value={selectedHood}
+              onChange={handleHoodChange}
+              allowAll={true}
+            />
           </div>
         </div>
 
@@ -343,7 +321,7 @@ export default function BrowseServices() {
           </div>
 
           {/* Local Only checkbox */}
-          {selectedHood !== 'All Hoods' && (
+          {selectedHood !== 'All Hoods' && selectedHood !== 'All Locations' && (
             <label className="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-gray-200">
               <input
                 type="checkbox"
